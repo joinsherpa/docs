@@ -1,0 +1,222 @@
+openapi: 3.0.3
+info:
+  title: Card API
+  description: An API for managing card entities
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /card:
+    post:
+      summary: Create a new card
+      operationId: createCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/card_body'
+        required: true
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /card/{cardId}/cancel:
+    patch:
+      summary: Cancel an existing card
+      operationId: cancelCard
+      parameters:
+      - name: cardId
+        in: path
+        description: ID of the card to be canceled
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+components:
+  schemas:
+    ErrorResponse:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+    Card:
+      type: object
+      properties:
+        id:
+          type: string
+        billingAddress:
+          $ref: '#/components/schemas/BillingAddress'
+        cardHolder:
+          $ref: '#/components/schemas/CardHolder'
+        number:
+          type: string
+        type:
+          type: string
+          enum:
+          - mastercard
+          - visa
+        expiryMonth:
+          type: number
+        expiryYear:
+          type: number
+        currency:
+          type: string
+          enum:
+          - usd
+        spendingLimit:
+          type: number
+        isCancelled:
+          type: boolean
+      example:
+        number: number
+        spendingLimit: 1.46581298050294517310021547018550336360931396484375
+        isCancelled: true
+        expiryMonth: 0.80082819046101150206595775671303272247314453125
+        cardHolder:
+          firstName: firstName
+          lastName: lastName
+        currency: usd
+        id: id
+        billingAddress:
+          country: country
+          city: city
+          state: state
+          postal_code: postal_code
+          line2: line2
+          line1: line1
+        expiryYear: 6.02745618307040320615897144307382404804229736328125
+        type: mastercard
+    BillingAddress:
+      type: object
+      properties:
+        city:
+          type: string
+        country:
+          type: string
+        line1:
+          type: string
+        line2:
+          type: string
+        postal_code:
+          type: string
+        state:
+          type: string
+      example:
+        country: country
+        city: city
+        state: state
+        postal_code: postal_code
+        line2: line2
+        line1: line1
+    CardHolder:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+      example:
+        firstName: firstName
+        lastName: lastName
+    card_body:
+      required:
+      - allTimeSpendingLimit
+      - shouldUse3DSecure
+      type: object
+      properties:
+        shouldUse3DSecure:
+          type: boolean
+          description: Whether or not the card should use 3DS. This will usually depend
+            on the portal.
+        allTimeSpendingLimit:
+          type: number
+          description: Cards will be generated with the minimum necessary limit to
+            pay for the visa.
+  responses:
+    Error500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error400:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error404:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
